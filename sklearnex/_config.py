@@ -23,6 +23,7 @@ from sklearn import set_config as skl_set_config
 _default_global_config = {
     "target_offload": "auto",
     "allow_fallback_to_host": False,
+    "fp32_with_bf16_emulation": "none"
 }
 
 _threadlocal = threading.local()
@@ -50,7 +51,7 @@ def get_config():
     return {**sklearn, **sklearnex}
 
 
-def set_config(target_offload=None, allow_fallback_to_host=None, **sklearn_configs):
+def set_config(target_offload=None, allow_fallback_to_host=None, fp32_with_bf16_emulation=None, **sklearn_configs):
     """Set global configuration
     Parameters
     ----------
@@ -76,6 +77,8 @@ def set_config(target_offload=None, allow_fallback_to_host=None, **sklearn_confi
         local_config["target_offload"] = target_offload
     if allow_fallback_to_host is not None:
         local_config["allow_fallback_to_host"] = allow_fallback_to_host
+    if fp32_with_bf16_emulation is not None:
+        local_config["fp32_with_bf16_emulation"] = fp32_with_bf16_emulation
 
 
 @contextmanager

@@ -35,6 +35,7 @@ from ..common._estimator_checks import _check_is_fitted
 from ..datatypes._data_conversion import from_table, to_table
 from onedal import _backend
 
+import warnings
 
 class SVMtype(Enum):
     c_svc = 0
@@ -376,7 +377,7 @@ class SVC(ClassifierMixin, BaseSVM):
                  coef0=0.0, tol=1e-3, shrinking=True, cache_size=200.0,
                  max_iter=-1, tau=1e-12, class_weight=None,
                  decision_function_shape='ovr', break_ties=False,
-                 algorithm='thunder', **kwargs):
+                 algorithm='thunder', fp32_with_bf16_emulation='none', **kwargs):
         super().__init__(C=C, nu=0.5, epsilon=0.0, kernel=kernel, degree=degree,
                          gamma=gamma, coef0=coef0, tol=tol,
                          shrinking=shrinking, cache_size=cache_size,
@@ -384,6 +385,7 @@ class SVC(ClassifierMixin, BaseSVM):
                          decision_function_shape=decision_function_shape,
                          break_ties=break_ties, algorithm=algorithm)
         self.svm_type = SVMtype.c_svc
+        self.fp32_with_bf16_emulation = fp32_with_bf16_emulation
 
     def _validate_targets(self, y, dtype):
         y, self.class_weight_, self.classes_ = _validate_targets(
@@ -391,6 +393,7 @@ class SVC(ClassifierMixin, BaseSVM):
         return y
 
     def fit(self, X, y, sample_weight=None, queue=None):
+        warnings.warn(self.fp32_with_bf16_emulation)
         return super()._fit(X, y, sample_weight, _backend.svm.classification, queue)
 
     def predict(self, X, queue=None):

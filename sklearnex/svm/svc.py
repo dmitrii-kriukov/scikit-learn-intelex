@@ -207,6 +207,12 @@ class SVC(sklearn_SVC, BaseSVC):
             'decision_function_shape': self.decision_function_shape,
         }
 
+        from .._config import get_config, config_context
+
+        cfg = get_config()
+        if (cfg["fp32_with_bf16_emulation"]):
+            onedal_params["fp32_with_bf16_emulation"] = cfg["fp32_with_bf16_emulation"]
+
         self._onedal_estimator = onedal_SVC(**onedal_params)
         self._onedal_estimator.fit(X, y, sample_weight, queue=queue)
 
